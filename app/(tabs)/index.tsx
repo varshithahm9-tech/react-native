@@ -1,88 +1,93 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const [age, setAge] = useState('');
+  const [submitage, setSubmitage] = useState('');
+  const [isGrid, setIsGrid] = useState(false);
+  let [count, setcount] = useState(0);
+  const ageInput = Number(age);
+  const handleAge = () => {
+
+    if (ageInput > 100) {
+      Alert.alert('Invalid input', 'please enter valid age');
+      return;
+    }
+    setSubmitage(age);
+    setIsGrid(!isGrid)
+  }
+  const ageIncrement = () => {
+    if (ageInput < 50) {
+      setcount(ageInput => ageInput + 1)
+      return;
+    }
+  }
+
+  useEffect(() => {
+    ageIncrement;
+  }, [count]);
+
+  const Detail = [
+    { id: 1, name: 'varshitha', job: 'Software Engineer' },
+    { id: 2, name: 'shalini', job: 'Software QA Engineer' },
+    { id: 3, name: 'sudha', job: 'Software Developer' }
+  ];
+
+
+
+  return (
+    <View style={styles.titleContainer}>
+      <Text>Name: Varshitha</Text>
+      <Text>Role: React Native Developer</Text>
+      <Text>Experience: ReactJS</Text>
+      <TextInput placeholder='enter your age'
+        style={styles.input}
+        keyboardType='numeric'
+        value={age}
+        onChangeText={setAge}
+      ></TextInput>
+      <Button title={isGrid ? 'submit' : 'change'} onPress={handleAge} />
+      {
+        submitage ? (
+          <Text>your age is {submitage}</Text>
+        ) : null
+      }
+
+      <FlatList
+        data={Detail}
+        key={isGrid ? 'list' : 'grid'}
+        renderItem={({ item }) => (
+          <Text style={{ fontSize: 20 }}>
+            {`${item.name} --> ${item.job}`}
+            {/* {item.name} --> {item.job} */}
+          </Text>
+        )}
+        keyExtractor={(item) => item.id}
+        // horizontal
+        numColumns={isGrid ? 2 : 1}
+      />
+
+      <Button title='age increment' onPress={ageIncrement} />
+      <Text>{`age is increased to ${count}`}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     gap: 8,
+    marginTop: 30
+  },
+  input: {
+    width: 200,
+    borderWidth: 1,
+    padding: 5,
+    borderRadius: 3
+
   },
   stepContainer: {
     gap: 8,
